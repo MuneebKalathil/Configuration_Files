@@ -1,0 +1,45 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+
+#Create 2 Virtual machines i)mysqlmaster & ii) mysqlslave using "gbarbieru/xenial" box.
+
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://atlas.hashicorp.com/search.
+  #config.vm.box = "gbarbieru/xenial"
+  config.vm.define "mysqlmaster" do |mysqlmaster|
+    mysqlmaster.vm.box = "gbarbieru/xenial"
+    mysqlmaster.vm.network "public_network", ip:"192.168.1.20"
+    mysqlmaster.vm.hostname = "mysql-master"
+    mysqlmaster.vm.provision "shell", inline: <<-SHELL
+        sudo apt-get update -y
+    SHELL
+    mysqlmaster.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "512"]
+      vb.customize ["modifyvm", :id, "--cpus", "1"]
+    end
+  end
+
+  config.vm.define "mysqlslave" do |mysqlslave|
+    mysqlslave.vm.box = "gbarbieru/xenial"
+    mysqlslave.vm.network "public_network", ip:"192.168.1.21"
+    mysqlslave.vm.hostname = "mysql-slave"
+    mysqlslave.vm.provision "shell", inline: <<-SHELL
+        sudo apt-get update -y
+    SHELL
+    mysqlslave.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "512"]
+      vb.customize ["modifyvm", :id, "--cpus", "1"]
+    end
+  end
+
+end
